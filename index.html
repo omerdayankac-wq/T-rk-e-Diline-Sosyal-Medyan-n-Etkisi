@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Türkçe Etki Analizi</title>
+<style>
+:root{--bg:#f3f1ec;--card:#fff;--tx:#1d2330;--mut:#667085;--ac:#d6452f;--ac2:#1f6f8b;--bd:#e3ded2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161b;--card:#1e2128;--tx:#eceef2;--mut:#9aa1ad;--ac:#f07562;--ac2:#6cb6d6;--bd:#33373f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14161b;--card:#1e2128;--tx:#eceef2;--mut:#9aa1ad;--ac:#f07562;--ac2:#6cb6d6;--bd:#33373f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 Georgia,"Times New Roman",serif}
+main{max-width:640px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:1.8rem;line-height:1.2;margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;margin:16px 0}
+.tag{display:inline-block;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ac2);font-weight:bold}
+.q{font-size:1.2rem;margin:8px 0 16px;font-weight:bold}
+.ex{color:var(--mut);font-size:.9rem;margin:-8px 0 14px}
+.o{display:block;width:100%;text-align:left;background:transparent;color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin:8px 0;font:inherit;cursor:pointer}
+.o:hover{border-color:var(--ac)}
+.bar{height:6px;background:var(--bd);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .3s}
+.cnt{font-size:.85rem;color:var(--mut)}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:12px 22px;font:inherit;font-weight:bold;cursor:pointer}
+.btn.g{background:transparent;color:var(--ac2);border:1px solid var(--ac2)}
+.big{font-size:3.2rem;font-weight:bold;color:var(--ac);line-height:1}
+.cat{margin:16px 0}
+.cat .h{display:flex;justify-content:space-between;font-weight:bold}
+.cat .t{height:10px;background:var(--bd);border-radius:5px;overflow:hidden;margin:4px 0}
+.cat .t b{display:block;height:100%;background:var(--ac2)}
+.cat p{margin:2px 0;font-size:.9rem;color:var(--mut)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+td,th{border-bottom:1px solid var(--bd);padding:6px;text-align:left}
+th{color:var(--mut);font-weight:normal}
+pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px;font-size:.85rem}
+.note{font-size:.85rem;color:var(--mut)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<h1>Türkçem Sosyal Medyadan Ne Kadar Etkilendi?</h1>
+<p class="note">16 soru. Kısaltma, yabancı kelime, yazım ve biçim olmak üzere 4 alanda Türkçeni analiz eder. Dürüst cevap ver, kimse görmüyor.</p>
+
+<section id="quiz" class="card">
+<div class="bar"><i id="pg"></i></div>
+<div class="cnt" id="cnt"></div>
+<span class="tag" id="tag"></span>
+<div class="q" id="q"></div>
+<div class="ex" id="ex"></div>
+<div id="opts"></div>
+<button class="btn g" id="back" hidden>Geri</button>
+</section>
+
+<section id="res" hidden>
+<div class="card">
+<p class="note">Genel sosyal medya etki puanın</p>
+<div class="big" id="tot"></div>
+<h2 id="lvl"></h2>
+<p id="msg"></p>
+<p><b>Baskın alanın:</b> <span id="prof"></span></p>
+</div>
+<div class="card" id="cats"></div>
+<div class="card" id="trc" hidden>
+<b>Yabancı kelimelerin Türkçe karşılıkları</b>
+<table><tr><th>Sosyal medyada</th><th>Türkçesi</th></tr>
+<tr><td>cringe</td><td>utanç verici, tuhaf</td></tr>
+<tr><td>random</td><td>rastgele</td></tr>
+<tr><td>flex</td><td>gösteriş</td></tr>
+<tr><td>mood</td><td>ruh hâli</td></tr>
+<tr><td>vibe</td><td>hava, atmosfer</td></tr>
+<tr><td>crush</td><td>hoşlanılan kişi</td></tr>
+<tr><td>post, story</td><td>gönderi, hikâye</td></tr>
+<tr><td>like, follow, block</td><td>beğenmek, takip etmek, engellemek</td></tr>
+</table>
+</div>
+<div class="card">
+<p class="note">Araştırma verisi için sonucu kopyalayabilirsin:</p>
+<pre id="cp"></pre>
+<button class="btn g" id="copy">Sonucu kopyala</button>
+<button class="btn" id="again">Testi yenile</button>
+<p class="note">Bu test kendi bildirimine dayanır, tanı aracı değildir.</p>
+</div>
+</section>
+</main>
+<script>
+var CATS=["Kısaltma","Yabancı kelime","Yazım bozulması","Biçim ve noktalama"];
+var TIPS=["Yazışmalarda kısaltmaların yerine tam kelimeyi yazmayı dene. Özellikle okul ve resmî yazılarda kısaltma kullanma.","Türkçe karşılığı olan kelimeyi bilerek seç. Aşağıdaki tablo iyi bir başlangıç olabilir.","Konuşma dilini olduğu gibi yazma. de/da, ki ve Türkçe karakterlere dikkat etmek yeterli.","Büyük harf ve noktayı geri getirmek, mesajlarını çok daha okunur yapar."];
+var Q=[
+[0,"slm, mrb, nbr gibi selamlaşma kısaltmalarını kullanırım.","Selamlaşırken"],
+[0,"tmm, tşk, ryd gibi kısaltmalar yazarım.","Mesajlaşırken"],
+[0,"bir yerine bi, hiçbir şey yerine hiçbişey yazarım.","Yazım"],
+[0,"Kısaltmaları resmî ya da ödev yazılarında da yazdığım olur.","Resmî yazılarda"],
+[1,"cringe, random, flex gibi kelimeleri günlük konuşmada kullanırım.","Konuşma"],
+[1,"Likeladım, followladım, postladım gibi Türkçe ek alan yabancı fiiller kullanırım.","Sosyal medya"],
+[1,"Cümlenin ortasına btw, so, of course gibi İngilizce ifadeler eklerim.","Yazışma"],
+[1,"Türkçesi varken mood, vibe, crush gibi kelimeleri tercih ederim.","Kelime tercihi"],
+[2,"Türkçe karakterleri (ç, ş, ğ, ı, ö, ü) kullanmadan yazarım.","Karakterler"],
+[2,"Harfleri uzatarak yazarım (çoook, neeee, hayıırr).","Vurgu"],
+[2,"Konuşur gibi yazarım (gidicem, yapıyom, napıyon).","Konuşma dili"],
+[2,"de/da ve ki yazımına dikkat etmem, hızlı yazarken ayırmam.","Ek yazımı"],
+[3,"Cümlelerimi büyük harf kullanmadan yazarım.","Büyük harf"],
+[3,"Cümle sonuna nokta koymam, virgülü çok az kullanırım.","Noktalama"],
+[3,"Cümle yerine emoji, sticker ya da tek kelimeyle cevap veririm.","Biçim"],
+[3,"Uzun metin yazmak yerine kısa ve parçalı mesajlar atarım.","Üslup"]
+];
+var OPT=["Asla","Nadiren","Sık sık","Her zaman"];
+var i=0,ans=[];
+function $(x){return document.getElementById(x)}
+function show(){
+var q=Q[i];
+$("cnt").textContent="Soru "+(i+1)+" / "+Q.length;
+$("pg").style.width=(i/Q.length*100)+"%";
+$("tag").textContent=CATS[q[0]];
+$("q").textContent=q[1];
+$("ex").textContent=q[2];
+$("back").hidden=i===0;
+var h="";
+OPT.forEach(function(t,k){h+='<button class="o" data-k="'+k+'">'+t+'</button>'});
+$("opts").innerHTML=h;
+}
+$("opts").onclick=function(e){
+var b=e.target.closest("button");if(!b)return;
+ans[i]=+b.dataset.k;
+if(i<Q.length-1){i++;show()}else finish();
+};
+$("back").onclick=function(){if(i>0){i--;show()}};
+function finish(){
+var s=[0,0,0,0],n=[0,0,0,0];
+Q.forEach(function(q,k){s[q[0]]+=ans[k];n[q[0]]++});
+var p=s.map(function(v,k){return Math.round(v/(n[k]*3)*100)});
+var t=Math.round(p.reduce(function(a,b){return a+b},0)/4);
+var L=t<=25?["Düşük etki","Türkçen sosyal medyadan çok az etkilenmiş. Dilini büyük ölçüde koruyorsun."]:t<=50?["Orta düzeyde etki","Bazı alışkanlıkların sosyal medyadan geliyor ama dilinin temeli sağlam."]:t<=75?["Yüksek etki","Sosyal medya dili yazma ve konuşma alışkanlıklarına belirgin biçimde yerleşmiş."]:["Çok yüksek etki","Günlük dilin sosyal medya diliyle büyük ölçüde şekillenmiş. Bilinçli bir Türkçe farkındalığı işine yarar."];
+var mx=p.indexOf(Math.max.apply(null,p));
+$("tot").textContent="%"+t;
+$("lvl").textContent=L[0];
+$("msg").textContent=L[1];
+$("prof").textContent=CATS[mx]+" (%"+p[mx]+")";
+var h="";
+CATS.forEach(function(c,k){h+='<div class="cat"><div class="h"><span>'+c+'</span><span>%'+p[k]+'</span></div><div class="t"><b style="width:'+p[k]+'%"></b></div>'+(p[k]>=50?'<p>'+TIPS[k]+'</p>':'<p>Bu alanda Türkçeni iyi koruyorsun.</p>')+'</div>'});
+$("cats").innerHTML=h;
+$("trc").hidden=p[1]<25;
+$("cp").textContent="Genel: %"+t+" | Kısaltma: %"+p[0]+" | Yabancı kelime: %"+p[1]+" | Yazım: %"+p[2]+" | Biçim: %"+p[3];
+$("quiz").hidden=true;$("res").hidden=false;scrollTo(0,0);
+}
+$("copy").onclick=function(){try{navigator.clipboard.writeText($("cp").textContent);this.textContent="Kopyalandı"}catch(e){this.textContent="Metni elle kopyala"}};
+$("again").onclick=function(){i=0;ans=[];$("res").hidden=true;$("quiz").hidden=false;$("copy").textContent="Sonucu kopyala";show();scrollTo(0,0)};
+show();
+</script>
+</body>
+</html>
